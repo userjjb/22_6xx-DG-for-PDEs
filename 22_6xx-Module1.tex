@@ -1,0 +1,249 @@
+\documentclass{beamer}
+\usepackage[english]{babel}							%For internationalization
+\usepackage[utf8]{inputenc}							%For character encoding
+\usepackage{amsmath}								%For mathematical typesetting
+\usepackage{amssymb}								%For mathematical typesetting
+\usepackage{graphicx}								%For handling graphics
+
+\newcommand{\be}{\begin{equation}}
+\newcommand{\ben}[1]{\begin{equation}\label{#1}}
+\newcommand{\ee}{\end{equation}}
+
+\title
+{An Introduction to Discontinuous Galerkin Methods}
+\subtitle{Module 1: What is DG?}
+\author[Bevan] % (optional, for multiple authors)
+{J.~Bevan}
+\institute[Universities Here and There] % (optional)
+{
+  Department of Mechanical Engineering, Grad Student\\
+  University of Massachusetts at Lowell
+}
+\date[Fall 2014] % (optional)
+{}
+\subject{Discontinuous Galerkin}
+
+\begin{document}
+\frame{\titlepage}
+\frame{\frametitle{Module 1: What is DG?}\tableofcontents} 
+
+\section{Overall Content Structure}
+\subsection{Assumed Prerequisite Knowledge}
+\frame{\frametitle{\textbf{\secname}: \subsecname}
+\begin{itemize}
+\item It is assumed the interested viewer is an advanced undergrad or graduate student with the typical STEM background of Calculus, Linear Algebra, and ODEs/PDEs.
+\item Additionally, it is assumed the viewer has at least a basic background in a programming language of their choice (Matlab etc.)
+\item Finally it is assumed the viewer has taken a general Numerical Methods course as well a Solution of PDEs course.
+\item Not intended to teach common underlying techniques (interpolation etc.), but we may [Recall] important features of them.
+\end{itemize} 
+}
+
+\subsection{Numerical Methods Prerequisites} 
+\frame[shrink]{\frametitle{\subsecname}
+\begin{itemize}
+\item Linear algebra
+	\begin{itemize}
+	\item Vector spaces, bases, properties, etc.
+	\item Orthogonality
+	\item maybe some useful spaces (Hilbert, square integrable, etc)?
+	\end{itemize}
+\item Polynomial interpolation(1 and 2D)
+	\begin{itemize}
+	\item Lagrange, Hermite
+	\item monomial basis (and ill-conditioned nature)
+	\item Orthogonal basis (Legendre, Chebyshev)
+	\item L2 projection
+	\item choice of interpolation points (equispaced, GL, LGL, etc)
+	\item Runge phenomenon
+	\item Vandermonde matrix (transformation from modal to nodal spaces)
+	\end{itemize} 
+\item Quadrature (1 and 2D)
+	\begin{itemize}
+		\item Newton-Cotes
+	\item Gauss/Hermite(Legendre)
+	\item relation to interpolation
+
+	\end{itemize} 
+\item Solution of ODEs
+	\begin{itemize}
+	\item Forward Euler
+	\item RK4
+	\item Implicit schemes (e.g. Backward Euler)
+	\item Stability, Convergence
+	\end{itemize} 
+\end{itemize} 
+}
+
+\subsection{Solution of PDEs Prerequisites} 
+\frame[shrink]{\frametitle{\subsecname}
+\begin{itemize}
+\item Domain representation
+	\begin{itemize}
+	\item meshing
+	\item BCs (Neumann and Dirichlet)
+	\end{itemize}
+\item Finite difference methods (FDM)
+	\begin{itemize}
+	\item Pointwise spatial derivatives
+	\item Computational vs Physical domains
+	\item Basic mapping (bilinear)
+	\end{itemize} 
+\item Finite volume methods (FVM)
+	\begin{itemize}
+	\item Flux functions
+	\item Artificial viscosity
+	\item Linear vs nonlinear fluxes
+	\end{itemize} 
+\item Finite element methods (FEM)
+	\begin{itemize}
+	\item Weak and strong form formulation
+	\item Piecewise linear solution approximation
+	\item Galerkin style test functions
+	\item local support
+	\end{itemize} 
+\end{itemize}
+}
+
+\subsection{Lecture Goals} 
+\frame[shrink]{\frametitle{\subsecname}
+\begin{itemize}
+\item Understand DG spatial discretization (advective)
+\begin{itemize}
+\item DG weak form (test function to minimize residual or test function orthogonal)
+\item solution approximation (and initial conditions)
+\item mapping physical to computation domain (for curvilinear domains)
+\item DG Galerkin formulation
+\item Integration by parts $\rightarrow$ flux functions (solution smoothness requirements): differences from FEM
+\item linear vs non-linear flux: ramifications for semi-discrete system
+\item hyperbolic vs parabolic
+\item applying BCs (include periodic BCs)
+\end{itemize}
+\item  Understand time discretization
+\begin{itemize}
+\item Method of lines style semi-discrete form
+\item Types: e.g. Forward Euler, RK4
+\item CFL condition and stability
+\end{itemize} 
+\item Learn how to apply DG to arbitrary PDEs and realm of applicability
+\begin{itemize}
+\item intuitive understanding of methodology
+\item conceptualization of process (not tied down to specific examples)
+\item understand pros/cons
+\item understand how DG “simplifies” to FVM and FEM
+\end{itemize} 
+\item Generate runnable code of your own
+\begin{itemize}
+\item Self-contained set of knowledge and algorithms to be able to write a full solver
+\end{itemize} 
+\end{itemize}
+}
+
+\subsection{Topics Layout} 
+\frame{\frametitle{\subsecname}
+\textbf{Module 1: What is DG?}\\
+DG motivation (why vs FEM, FVM, FDM)\\
+Scalar conservation law (linear) PDE\\
+Weak form derivation\\
+Global domain vs local element\\
+Multiple-valued element boundaries\\
+Recall: Flux functions\\
+}
+
+\frame{\frametitle{\subsecname (cont.)}
+\textbf{Module 2: A Simple 1D DG Solver}\\
+Linear solution approximation\\
+Test function choice (Galerkin)\\
+Upwind flux\\
+Mass Matrix\\
+Stiffness Matrix\\
+Putting it all together (linear system)\\
+Semi-discrete system\\
+Forward Euler\\
+Investigate h-convergence\\
+Investigate t-convergence\\
+Investigate stability (CFL)\\
+}
+
+\frame{\frametitle{\subsecname (cont.)}
+\textbf{Module 3: To Higher-Orders (nodal) }\\
+\textbf{3A: Sol’n Approximation}\\
+Revisit weak form\\
+-Approx. space\\
+-L2 Projection minimizes residual norm\\
+-Test space $\rightarrow$ orthogonal\\
+Monomial basis?\\
+Ill-conditioning of monomials\\
+Recall: Lagrange interpolation (code)\\
+Derive Lagrange spatial approximation\\
+Equispaced interp points?\\
+Runge phenomenon\\
+Why: Bernstein/Markov inequality\\
+Roots of Leg instead\\
+}
+\frame{\frametitle{\subsecname (cont.)}
+\textbf{Module 3: To Higher-Orders (nodal) }\\
+\textbf{3B: Discrete System}\\
+Numerical Quadrature (Gauss)\\
+Hermite interpolation (2N+1 quad)\\
+Truncation error/exact quadrature\\
+GL Lagrange orthogonality\\
+Local Mapping Fun\\
+Mass Integral ->diagonal/inversion\\
+Log differentiation\\
+Flux interpolation\\
+Stiffness Integral\\
+Numerical Flux (interpolated)\\
+Assembly of system\\
+RK4 time discretization\\
+Investigate p-convergence (smoothness reqs)\\
+}
+
+\subsection{A Pedagogical Comment} 
+\frame{\frametitle{\subsecname}
+\begin{itemize}
+\item Take advantage of format: replay, pause, speed up, slow down
+\item Each section may have subsections, but the overall section is intended to be a self-contained concept. The first slide of a new section has the title format \textbf{Section}: Subsection
+\item Easy to "zone-out", before the start of a new section try and put what you learned into action. Make a code snippet to test your understanding or verify a claimed result etc.
+\item Each Module has a larger self-contained concept. You should be able to put together a script that accomplishes something substantial.
+\end{itemize} 
+}
+
+\section{DG Motivation: Why DG?} 
+\frame{\frametitle{\secname}
+\begin{itemize}
+\item 
+\item 
+\item 
+\end{itemize} 
+}
+
+\section{Example PDE: Scalar Conservation Law} 
+\frame{\frametitle{\secname}
+\begin{itemize}
+\item 
+\item 
+\item 
+\end{itemize} 
+}
+
+\section{The Weak Form of the PDE} 
+\frame{\frametitle{\secname}
+
+}
+
+\section{Domain Decomposition: Global vs Local} 
+\frame{\frametitle{\secname}
+
+}
+
+\section{Element Boundaries: Multiply Defined?} 
+\frame{\frametitle{\secname}
+
+}
+
+\section{[Recall] Flux Functions} 
+\frame{\frametitle{\secname}
+
+}
+
+\end{document}
