@@ -1,0 +1,162 @@
+\documentclass{beamer}
+\usefonttheme[onlymath]{serif}
+\usepackage[english]{babel}							%For internationalization
+\usepackage[utf8]{inputenc}							%For character encoding
+\usepackage{amsmath}								%For mathematical typesetting
+\usepackage{amssymb}								%For mathematical typesetting
+\usepackage{graphicx}								%For handling graphics
+
+\newcommand{\be}{\begin{equation}}
+\newcommand{\bea}{\begin{equation*}}
+\newcommand{\ben}[1]{\begin{equation}\label{#1}}
+\newcommand{\ee}{\end{equation}}
+\newcommand{\eea}{\end{equation*}}
+\newcommand{\aq}{\overset{\sim}{q}}
+
+\title
+{An Introduction to Discontinuous Galerkin Methods}
+\subtitle{Module 2: A Simple 1D DG Solver}
+\author[Bevan] % (optional, for multiple authors)
+{J.~Bevan}
+\institute[UMass Lowell]
+{
+  Department of Mechanical Engineering, Grad Student\\
+  University of Massachusetts at Lowell
+}
+\date[Fall 2014]
+{}
+\subject{Discontinuous Galerkin}
+
+\begin{document}
+\frame{\titlepage}
+\frame{\frametitle{Module 2: A Simple 1D DG Solver}\tableofcontents}
+
+%NEW SECTION
+\section{Linear Solution Approximation} 
+\subsection{Definition}
+\frame{\frametitle{\textbf{\secname}: \subsecname}
+\begin{itemize}
+\item The exact sol'n $q(x)$ is not usually obtainable, the best we can do is an approximate sol'n $\aq(x)$
+\item We can think of the approximate solution belonging to some finite vector space $\aq \in V_h$, this vector space must have a set of basis vectors $\psi$ such that
+\be \aq(x) = \sum_{i=0}^M a_i \psi_i(x) \ee
+\item We will choose $V_h$ in this simple example to be the space of all polynomials of order 1 and less: $\mathbb{P}^M, M=1$
+\item Because $M=1$, we must have two basis functions. We shall choose two ramp functions, let's see what they look like...
+\end{itemize}
+}
+
+\subsection{Bases and Resultant Approximation} 
+\frame{\frametitle{\subsecname}
+\begin{itemize}
+\item Basis funs (blue) $\psi_0(x) = 1-x$ and (red) is $\psi_1(x)=x$. Resultant approximation is linear: $\aq(x) = a_0(1-x) + a_1(x)$
+\end{itemize}
+\begin{figure}
+\centering
+\includegraphics[width=4in]{linearBasis.PNG}
+\end{figure}
+}
+
+%NEW SECTION
+\section{Test Function Choice (Galerkin)} 
+\frame{\frametitle{\textbf{\secname}}
+\begin{itemize}
+\item We have now defined our approximation space, but what about the weighting function in the weak form: $\phi$?
+\item We will discuss this in greater detail, but as in a FEM, DG chooses the space of weighting functions to be the same as the approximation space, $\phi \in V_h$
+\item This means our weighting functions are ramp functions as well $\phi_0(x) = \psi_0(x), \phi_1(x) = \psi_1(x)$
+\item In order to solve for the approximation, our weak form sol'n must be satisfied for \textit{each} weighting function.
+\end{itemize}
+}
+
+%NEW SECTION
+\section{Upwind Flux} 
+\frame{\frametitle{\textbf{\secname}}
+\begin{itemize}
+\item If our flow is incompressible and the global domain is 1D, we must have a constant flow with velocity $c$ everywhere.
+\item Let's assume that $c>1$, the numerical flux is then $c\aq^-$ at all boundaries 
+\item Note that there are two distinct numerical fluxes for element $k$, on the left it is $cq^-(x_L)$ and the right $cq^-(x_R)$ , where $q^-(x_L)$ doesn't necessarily equal $q^-(x_R)$
+\end{itemize}
+\begin{figure}
+\centering
+\includegraphics[width=1.5in]{qBoundary.PNG}
+\end{figure}
+}
+
+%NEW SECTION
+\section{Mass Matrix} 
+\frame{\frametitle{\textbf{\secname}}
+\be \int_k\! \frac{\partial \aq}{\partial t} \,\phi_j \,dx +
+	[f(\aq)\phi_j] \Big\rvert_{x_L}^{x_{R}} -
+	\int_k\! f(\aq) \,\frac{d\phi_j}{dx} \,dx = 0 \quad for\, all\, j\leq N\ee
+\begin{itemize}
+\item From convention for dynamic systems the left integral in the weak form is called the \textit{mass matrix}
+\item We now have explicit formula for $\aq$ and $\phi$, substituting
+\be \int_k\! \frac{\partial \aq}{\partial t} \,\phi_n \,dx = \sum_{i=0}^M \frac{d a_i(t)}{dt} \int_k \psi_i(x) \phi_j(x) \ee
+\end{itemize}
+}
+\frame{\frametitle{\secname}
+\bea \int_k\! \frac{\partial \aq}{\partial t} \,\phi_n \,dx = \sum_{i=0}^M \frac{d a_i(t)}{dt} \int_k \psi_i(x) \phi_j(x) \eea
+\begin{itemize}
+\item Let's substitute in our expressions for approximation and the first weighting basis and analytically integrate
+\be \int_k \psi_i(x) \phi_0(x) =\qquad\qquad\qquad\qquad \Big|_0^1\ee
+\item Do this for each weighting basis to get 2x2 matrix: $\mathbf{M}_{j,i}$
+\item If the time derivative of each of the approximation coefficients is a vector $\mathbf{a}$ then
+\be \sum_{i=0}^M \frac{d a_i(t)}{dt} \int_k \psi_i(x) \phi_j(x) = \mathbf{M}\,\mathbf{a}  \ee
+\end{itemize}
+}
+
+
+%NEW SECTION
+\section{Stiffness Matrix} 
+\frame{\frametitle{\textbf{\secname}}
+\bea \int_k\! \frac{\partial q}{\partial t} \,\phi \,dx +
+	[f(q)\phi] \Big\rvert_{x_L}^{x_{R}} -
+	\int_k\! f(q) \,\frac{d\phi}{dx} \,dx = 0 \eea
+\begin{itemize}
+\item 
+\item 
+\item 
+\end{itemize}
+}
+
+%NEW SECTION
+\section{Putting it all Together} 
+\frame{\frametitle{\textbf{\secname}}
+
+}
+
+%NEW SECTION
+\section{Semi-discrete system} 
+\frame{\frametitle{\textbf{\secname}}
+\begin{itemize}
+\item 
+\item 
+\item 
+\end{itemize}
+
+
+}
+
+%NEW SECTION
+\section{Time Discretization: Forward Euler} 
+\frame{\frametitle{\textbf{\secname}}
+
+}
+
+%NEW SECTION
+\section{Investigation- h-Convergence} 
+\frame{\frametitle{\textbf{\secname}}
+
+}
+
+%NEW SECTION
+\section{Investigation- t-Convergence} 
+\frame{\frametitle{\textbf{\secname}}
+
+}
+
+%NEW SECTION
+\section{Investigation- Stability (CFL)} 
+\frame{\frametitle{\textbf{\secname}}
+
+}
+
+\end{document}

@@ -48,3 +48,6 @@ Temporary Items
 *.gz
 22_6xx-Module1.toc
 *.log
+*.nav
+22_6xx-Module2.snm
+*.toc

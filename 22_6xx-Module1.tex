@@ -15,7 +15,7 @@
 \subtitle{Module 1: What is DG?}
 \author[Bevan] % (optional, for multiple authors)
 {J.~Bevan}
-\institute[Universities Here and There] % (optional)
+\institute[UMass Lowell] % (optional)
 {
   Department of Mechanical Engineering, Grad Student\\
   University of Massachusetts at Lowell
@@ -27,7 +27,7 @@
 \begin{document}
 \frame{\titlepage}
 \frame{\frametitle{Module 1: What is DG?}\tableofcontents} 
-
+%NEW SECTION
 \section{Overall Content Structure}
 \subsection{Assumed Prerequisite Knowledge}
 \frame{\frametitle{\textbf{\secname}: \subsecname}
@@ -181,6 +181,7 @@ Runge phenomenon\\
 Why: Bernstein/Markov inequality\\
 Roots of Leg instead\\
 }
+
 \frame{\frametitle{\subsecname (cont.)}
 \textbf{Module 3: To Higher-Orders (nodal) }\\
 \textbf{3B: Discrete System}\\
@@ -209,8 +210,9 @@ Investigate p-convergence (smoothness reqs)\\
 \end{itemize} 
 }
 
+%NEW SECTION
 \section{DG Motivation: Why DG?} 
-\frame{\frametitle{\secname}
+\frame{\frametitle{\textbf{\secname}}
 \begin{itemize}
 \item Overall purpose: PDE models physical system, solve PDE numerically
 \item Compare to common techniques FDM, FEM, FVM:
@@ -224,18 +226,18 @@ Investigate p-convergence (smoothness reqs)\\
 \end{itemize} 
 }
 
-\section{Example PDE: Scalar Conservation Law} 
-\frame[shrink]{\frametitle{\secname}
-A brief motivating example:\\
+%NEW SECTION
+\section{Example PDE: Scalar Conservation Law}
+\subsection{A brief motivating example}
+\frame[shrink]{\frametitle{\textbf{\secname}: \subsecname}
 Imagine some scalar quantity that is subject to a conservation law
 \begin{figure}
 \centering
 \includegraphics[width=.5\textwidth]{square.PNG}
 \end{figure}
 }
-
-\section{Example PDE: Scalar Conservation Law} 
-\frame{\frametitle{\secname}
+\subsection{General Approach}  
+\frame{\frametitle{\subsecname}
 \begin{itemize}
 \item As worked out, PDE for system in 1D is
 \be \frac{\partial q}{\partial t} + \frac{\partial f(q)}{\partial x} = S(x) \ee
@@ -245,8 +247,9 @@ Imagine some scalar quantity that is subject to a conservation law
 \end{itemize} 
 }
 
+%NEW SECTION
 \section{The Weak Form of the PDE} 
-\frame{\frametitle{\secname}
+\frame{\frametitle{\textbf{\secname}}
 \begin{itemize}
 \item We will discuss the finer points of this in Module 3, for now permit the following; the weak form solution of the PDE is the integral (over the global domain $\Omega$) of our solution times some test function $\phi$:
 \be \int_{\Omega} \frac{\partial q}{\partial t} \phi \,dx + \int_{\Omega} \frac{\partial f(q)}{\partial x} \phi \,dx = 0 \ee
@@ -255,8 +258,9 @@ Imagine some scalar quantity that is subject to a conservation law
 \end{itemize}
 }
 
+%NEW SECTION
 \section{Domain Decomposition: Global vs Local} 
-\frame{\frametitle{\secname}
+\frame{\frametitle{\textbf{\secname}}
 \begin{itemize}
 \item The integration domain is now over the element instead of the whole domain such that $\{x|x \in k, x_L \leq x \leq x_R\}$
 \item To reduce smoothness requirements on the flux we integrate the second term by parts to get
@@ -268,8 +272,9 @@ Imagine some scalar quantity that is subject to a conservation law
 \end{itemize}
 }
 
+%NEW SECTION
 \section{Element Boundaries: Multiply Defined?} 
-\frame{\frametitle{\secname}
+\frame{\frametitle{\textbf{\secname}}
 \begin{itemize}
 \item If $q$ is multiply defined at endpoints, what should $f(q)$ be?
 \item In order to ensure conservation flux between elements should be equal $-f_{k-1}(q(x_R)) = f_{k}(q(x_L))$
@@ -278,8 +283,9 @@ Imagine some scalar quantity that is subject to a conservation law
 \end{itemize}
 }
 
+%NEW SECTION
 \section{[Recall] Flux Functions} 
-\frame{\frametitle{\secname}
+\frame{\frametitle{\textbf{\secname}}
 \begin{itemize}
 \item Flux functions describe the "flow" of some quantity depending on the quantity itself and possibly other factors
 \item Permits insertion of problem specific knowledge into an otherwise agnostic PDE
