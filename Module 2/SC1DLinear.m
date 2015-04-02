@@ -23,7 +23,7 @@ tau=2*pi();
 N=2;
 
 %--Discretize the domain into K elements with K+1 nodes
-K=16;
+K=32;
 xNode=0:1/K:1;
 deltax = diff(xNode);
 deltaxM = repmat(deltax,N,1);  %Repeat deltax for the N basis functions
@@ -79,15 +79,16 @@ cats = BasisWeights;
 deltaT= .0001;
 saveT = 0.01;
 nsaveT = floor(saveT/deltaT);
-endT = 10;
+endT = 3;
 nT = floor(endT/deltaT);
 NormFreq = 100;
 saved = zeros((nT/nsaveT)+1,K*N);
 i=0;
 norm2 = [];
 for t= 0:1:nT
-    BasisWeights_dt = SemiMatrix*BasisWeights;
-    BasisWeights = BasisWeights+(BasisWeights_dt.*deltaT);
+    %BasisWeights_dt = SemiMatrix*BasisWeights;
+    %BasisWeights = BasisWeights+(BasisWeights_dt.*deltaT);
+    BasisWeights = (eye(N*K)+SemiMatrix*deltaT)*BasisWeights;
     if t/nsaveT==floor(t/nsaveT)
         if i/NormFreq == floor(i/NormFreq)
             norm2 = [norm2 sum(([u(1,1) u(:,2)']'-BasisWeights([1 2:2:end])).^2)];
@@ -101,12 +102,13 @@ saved = reshape(saved',N,K,length(saved));
 j=0;
 
 h=figure;set(gcf, 'Color','white')
-nFrames = length(saved);
-vidObj = VideoWriter('1DConvDG.avi');
-vidObj.Quality = 100;
-vidObj.FrameRate = floor(nFrames/(2*endT));
-open(vidObj);
+% nFrames = length(saved);
+% vidObj = VideoWriter('1DConvDG.avi');
+% vidObj.Quality = 100;
+% vidObj.FrameRate = floor(nFrames/(2*endT));
+% open(vidObj);
 
+i=length(saved);
 for i=1:length(saved)
     plot(xh',saved(:,:,i))
     axis([0 1 -1.5 1.5])
@@ -119,9 +121,9 @@ for i=1:length(saved)
     text(1.02,-.3,num2str(rms(reshape(saved(2,:,i),K,1))));
     text(1.02,1.1,'Time')
     text(1.02,1,num2str((i-1)*saveT));
-    writeVideo(vidObj, getframe(h));
-    %pause(.01)
+    %writeVideo(vidObj, getframe(h));
+    pause(.001)
 end
 
-close(gcf)
-close(vidObj);
+%close(gcf)
+%close(vidObj);
