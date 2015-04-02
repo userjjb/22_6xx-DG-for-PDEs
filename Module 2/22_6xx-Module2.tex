@@ -93,13 +93,13 @@
 \end{itemize}
 }
 \frame{\frametitle{\secname}
-\bea \int_k\! \frac{\partial \aq}{\partial t} \,\phi_n \,dx = \sum_{i=0}^M \frac{d a_i(t)}{dt} \int_k \psi_i(x) \phi_j(x) \eea
+\bea \int_k\! \frac{\partial \aq}{\partial t} \,\phi_n \,dx = \sum_{i=0}^M \frac{d a_i(t)}{dt} \int_k \psi_i(x) \phi_j(x)\,dx \eea
 \begin{itemize}
 \item Let's substitute in our expressions for approximation and the first weighting basis and analytically integrate
-\be \int_k \psi_i(x) \phi_0(x) =\qquad\qquad\qquad\qquad \Big|_0^1\ee
+\be \int_k \psi_i(x) \phi_0(x)\,dx=\qquad\qquad\qquad\qquad \Big|_0^1\ee
 \item Do this for each weighting basis to get 2x2 matrix: $\mathbf{M}_{j,i}$
-\item If the time derivative of each of the approximation coefficients is a vector $\mathbf{a}$ then
-\be \sum_{i=0}^M \frac{d a_i(t)}{dt} \int_k \psi_i(x) \phi_j(x) = \mathbf{M}\,\mathbf{a}  \ee
+\item If the time derivative of each of the approximation coefficients is a vector $\mathbf{a'}$ then
+\be \sum_{i=0}^M \frac{d a_i(t)}{dt} \int_k \psi_i(x) \phi_j(x) \,dx = \mathbf{M}\,\mathbf{a'}  \ee
 \end{itemize}
 }
 
@@ -111,52 +111,89 @@
 	[f(q)\phi] \Big\rvert_{x_L}^{x_{R}} -
 	\int_k\! f(q) \,\frac{d\phi}{dx} \,dx = 0 \eea
 \begin{itemize}
-\item 
-\item 
-\item 
+\item Similar to mass matrix, substitute our approximation and bases into the third term.
+\be \int_k\! f(q) \,\frac{d\phi}{dx} \,dx = \sum_{i=0}^M c a_i(t) \int_k \psi_i(x) \phi'_j(x) \,dx \ee
+\item The integral for all weighting bases combine to form the stiffness matrix $\mathbf{K}$, we can analytically integrate for this simple case
 \end{itemize}
 }
+
+\frame{\frametitle{\secname}
+\begin{itemize}
+\item Similar to the mass matrix, we have a vector of our element approximation coefficients $\mathbf{a}$, such that
+\be \sum_{i=0}^M c a_i(t) \int_k \psi_i(x) \phi'_j(x) \,dx =  \mathbf{K}\,\mathbf{a}\ee
+\item Let's substitute in our expressions for approximation and the first weighting basis and analytically integrate
+\be \int_k \psi_i(x) \phi'_0(x)\,dx=\qquad\qquad\qquad\qquad \Big|_0^1\ee
+\end{itemize}
+}
+
 
 %NEW SECTION
 \section{Putting it all Together} 
 \frame{\frametitle{\textbf{\secname}}
-
+\begin{itemize}
+\item Just need to calculate the numerical flux vector now.
+\be [\hat{f}(q)\phi] \Big\rvert_{x_L}^{x_{R}} = cq_k(x_R)\phi_j(x_R)- cq_{k-1}(x_R)\phi_j(x_L)\ee
+\item $\phi_j$ will be zero sometimes, depending on $j$
+\item So what do we get?
+\item $\mathbf{\hat{f}}=$
+\end{itemize}
 }
 
 %NEW SECTION
 \section{Semi-discrete system} 
 \frame{\frametitle{\textbf{\secname}}
 \begin{itemize}
-\item 
-\item 
-\item 
+\item We can now express the semi-discrete system compactly in matrix/vector form
+\be \mathbf{M}\,\mathbf{a}'  + \mathbf{\hat{f}} - c\mathbf{K}\,\mathbf{a} =0 \ee
+\item For each time step we have $\mathbf{a}$, starting with $\mathbf{a}_0$ from ICs
+\item We'd like to calculate the time rate of change of our coefficients to use in our time discretization, so solve for $\mathbf{a}'$
+\be \,\mathbf{a}'  = \left[c\mathbf{K}\,\mathbf{a} -\mathbf{\hat{f}}\right]\mathbf{M}^{-1} \ee
 \end{itemize}
-
-
 }
 
 %NEW SECTION
 \section{Time Discretization: Forward Euler} 
 \frame{\frametitle{\textbf{\secname}}
-
+\begin{itemize}
+\item Now we need to complete the method by discretizing in time the semi-discrete system
+\item Let's use a Forward Euler approach; very simple explicit ODE solver
+\be \mathbf{a}_{t+1} = \mathbf{a}_t+ \mathbf{a}'_t \Delta t\ee
+\item We can overwrite our previous timestep's coefficients with the new ones to save memory
+\item We may want to periodically save $\mathbf{a}$ for plotting
+\item We must choose $\Delta t$ carefully, can you predict why?
+\end{itemize}
 }
 
 %NEW SECTION
 \section{Investigation- h-Convergence} 
 \frame{\frametitle{\textbf{\secname}}
-
+\begin{itemize}
+\item What do we expect for h-convergence?
+\item How coarse can our elements be and still get a "good-enough" answer?
+\item What effect does the shape/smoothness of the solution have on convergence?
+\end{itemize}
 }
 
 %NEW SECTION
 \section{Investigation- t-Convergence} 
 \frame{\frametitle{\textbf{\secname}}
-
+\begin{itemize}
+\item How big can we make $\Delta t$?
+\item Do we expect periodic solutions to stay steady over time?
+\item How do h and t convergence relate?
+\end{itemize}
 }
 
 %NEW SECTION
 \section{Investigation- Stability (CFL)} 
 \frame{\frametitle{\textbf{\secname}}
-
+\begin{itemize}
+\item As was seen, too large of a timestep lead to issues, why?
+\item What happens if a parcel of quantity moves fast enough to skip elements between timesteps?
+\item We need to ensure
+\be CFL = \frac{c \Delta t}{\Delta x} \leq C_{max}=1 \ee
+for explicit methods. Implicit methods relax this restriction to permit higher values.
+\end{itemize}
 }
 
 \end{document}
