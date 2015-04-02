@@ -109,9 +109,9 @@
 \item It has the form
 \be L_q(x) = \prod_{p=1,p\neq q}^{Np} \frac{x-x_p}{x_q-x_p} \ee
 \item We can compactly represent this as
-nn=elim(nd(1:N)',nd(1:N)',[1 3 2]);\\
+\textit{nn=elim(nd(1:N)',nd(1:N)',[1 3 2]);\\
 Lag= @(x,nv) prod(bsxfun(@rdivide,bsxfun(@minus,x,nn(nv,:,:)),...\\
-bsxfun(@minus,nd(nv),nn(nv,:,:))),3);
+bsxfun(@minus,nd(nv),nn(nv,:,:))),3)}
 \end{itemize}
 }
 

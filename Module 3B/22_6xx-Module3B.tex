@@ -13,6 +13,8 @@
 \newcommand{\eea}{\end{equation*}}
 \newcommand{\aq}{\overset{\sim}{q}}
 
+\mathchardef\mhyphen="2D
+
 \title
 {An Introduction to Discontinuous Galerkin Methods}
 \subtitle{Module 3B: To Higher-Orders - Discrete System}
@@ -82,7 +84,12 @@
 \section{Local Mapping Function (Jacobian)} 
 \frame{\frametitle{\textbf{\secname}}
 \begin{itemize}
-\item a
+\item The domain of orthogonality for Legendre polynomials (and by extension GL Lagrange) is $[-1, 1]$
+\item Elements may be arbitrary sizes though, we'd like to be able to transform $x \in [x_L, x_R] \rightarrow X \in [-1, 1]$ by means of a mapping $x=g(X)$ and it's inverse $X=G(x)$
+\be x=g(X)=\frac{X+1}{2}\Delta x + x_L\quad ,\quad X=G(x)=\frac{2(x-x_L)}{\Delta x}+1 \ee
+\item Applying a change of variables for the mapping
+\be \int_{x_L}^{x_R} L_i(x) L_j(x) \,dx \rightarrow \int_{-1}^1 L_i(g(X))L_j(g(X)) g' \, dX \ee
+\item $J=g'=\frac{\Delta x}{2}$ is called the determinant of the Jacobian matrix
 \end{itemize}
 }
 
@@ -90,7 +97,10 @@
 \section{Mass Matrix- Diagonalization} 
 \frame{\frametitle{\textbf{\secname}}
 \begin{itemize}
-\item a
+\item We have done what seems like quite a bit of tangential work, but it now pays off
+\be \sum_{i=0}^M \frac{d \aq_i}{dt} \int_k \psi_i(x) \phi_j(x) \,dx = \sum_{i=0}^M \frac{d \aq_i}{dt} \int_I L_i(X) L_j(X) \frac{\Delta x}{2} \,dX \ee
+\be=   \frac{\Delta x}{2} \sum_{i=0}^M \frac{d q_i}{dt} \delta_{ij}w_i =  \frac{\Delta x}{2}q_j'w_j \quad for\,all\, j \ee
+\item We've reduced the full mass matrix into a diagonal mass matrix with all other terms zero, compared to Module 2 solver case the mass matrix is trivially invertible. We have: $\frac{\Delta x}{2}\mathbf{q' \,M}$ where $\mathbf{M}_{jj} = w_j$
 \end{itemize}
 }
 
@@ -98,15 +108,12 @@
 \section{Log differentiation} 
 \frame{\frametitle{\textbf{\secname}}
 \begin{itemize}
-\item a
-\end{itemize}
-}
-
-%NEW SECTION
-\section{Flux interpolation} 
-\frame{\frametitle{\textbf{\secname}}
-\begin{itemize}
-\item a
+\item We can get a closed form expression for $L_j'(x)$ in the stiffness term by using logarithmic differentiation
+\item The main idea is that in general $f'/f = ln(f)$ so applying this to our Lagrange basis
+\be L_j'(x) = L_j \sum_{r=0,r\neq j}^N \frac{1}{x-x_r} \ee
+\item using our previous function code for "\textit{Lag(x)}" we can get a general expression
+\textit{dLag= @(x,nv) Lag(x,nv).*sum(1./bsxfun(@minus,x,nn(nv,:,:)),3)}
+\item We need a more involved method for evaluation at the interp points (see dLagrange.m)
 \end{itemize}
 }
 
@@ -114,7 +121,10 @@
 \section{Stiffness Integral} 
 \frame{\frametitle{\textbf{\secname}}
 \begin{itemize}
-\item a
+\item We now have a routine for calculating $L_j'$, and suitable quadrature; we can evaluate the stiffness integral
+\be \int_k \, \sum_{i=0}^M\left[ c\aq_i \psi_i(x)\right] \phi'_j(x) \,dx = \sum_{i=0}^M c\aq_i \int_I L_i(X) L_j'(X) \,dX \ee
+\item No Jacobian term from the mapping. The derivative in the integrand produces a complementary $1/J$ that cancels due to the change of variables.
+\item No tricks to be had for reducing the stiffness matrix, it is a full matrix. We have: $c\mathbf{K}_{ji} \, \mathbf{\aq}$ 
 \end{itemize}
 }
 
@@ -122,7 +132,12 @@
 \section{Numerical Flux (Extrapolated)} 
 \frame{\frametitle{\textbf{\secname}}
 \begin{itemize}
-\item Lobatto alternative
+\item One downside of using Gauss-Legendre points is there are no points on the boundary
+\item It is easy to calculate the boundary solution values from the solution interpolation at the left end (same idea for the right)
+\be \aq(x_L) = \sum_{i=0}^M \aq_i L_i(x_L) \ee
+\item Call $L_i(x_L) = L_{iL}$, the vector notation is then $\aq_L = \mathbf{L}_{iL}^T \, \mathbf{\aq}$
+\item So that our numerical flux vector is $\mathbf{\hat{f}} =c(\overset{k}{q}_R\mathbf{L}_{jR}-\overset{k-1}{q_R}\mathbf{L}_{jL})$
+\item Lobatto alternative gives boundary points, but would make the mass matrix a full matrix. Inversion is likely more expensive than interpolation
 \end{itemize}
 }
 
@@ -130,15 +145,26 @@
 \section{Assembly of System} 
 \frame{\frametitle{\textbf{\secname}}
 \begin{itemize}
-\item a
+\item We can now combine the mass, stiffness, and numerical flux terms
+\be \frac{\Delta x}{2}\mathbf{q' \,M} + \mathbf{\hat{f}} -  c\mathbf{K}_{ji} \, \mathbf{\aq}=0 \ee
+\item solving for $q'$
+\be \mathbf{\aq}' = \frac{2}{\Delta x} (c\mathbf{K}_{ji} \, \mathbf{\aq} -\mathbf{\hat{f}}) \mathbf{M}^{-1} \ee
+\item it is also possible to represent it componentwise easily thanks to the diagonal mass matrix
+\be \aq_j' = \frac{2}{w_j\Delta x }(c \mathbf{K}_{j\mhyphen}\mathbf{\aq}-\hat{f}_j)\ee
 \end{itemize}
 }
 
 %NEW SECTION
-\section{RK4 Time iscretization} 
+\section{RK4 Time discretization} 
 \frame{\frametitle{\textbf{\secname}}
 \begin{itemize}
-\item a
+\item Compared to the simple linear DG solver, we'd like to use a higher order time discretization, Runge-Kutta 4th order: RK4. We can express as a function: $\mathbf{\aq}'(\mathbf{\aq})$ from our discrete system. RK4 consists of 4 trial steps:
+
+$k_1 =  \mathbf{\aq}'(\mathbf{\aq}) \, \Delta t$\\
+$k_2 =  \mathbf{\aq}'(\mathbf{\aq}+\frac{k_1}{2}) \, \Delta t$\\
+$k_3 =  \mathbf{\aq}'(\mathbf{\aq}+\frac{k_2}{2}) \, \Delta t$\\
+$k_4 =  \mathbf{\aq}'(\mathbf{\aq}+k_3) \, \Delta t$\\
+$\mathbf{q}(t+1) = \mathbf{q} + \frac{k_1}{6}+ \frac{k_2}{3}+ \frac{k_3}{3}+ \frac{k_4}{6}$
 \end{itemize}
 }
 
@@ -146,7 +172,9 @@
 \section{Investigate p-Convergence} 
 \frame{\frametitle{\textbf{\secname}}
 \begin{itemize}
-\item smoothness reqs, maybe inequality?
+\item How does the p-convergence rate compare with h-convergence?
+\item Does the smoothness of the initial sol'n seem to effect the rate of convergence? (e.g. sin(x) vs gaussian curve)
+\item Does h or p refinement seem to be more efficient?
 \end{itemize}
 }
 
