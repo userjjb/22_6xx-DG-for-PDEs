@@ -15,8 +15,8 @@
 
 \title
 {An Introduction to Discontinuous Galerkin Methods}
-\subtitle{Module 3A: To Higher-Orders - Solution Approximation}
-\author[Bevan] % (optional, for multiple authors)
+\subtitle{Module 3B: To Higher-Orders - Discrete System}
+\author[Bevan]
 {J.~Bevan}
 \institute[UMass Lowell]
 {
@@ -29,65 +29,57 @@
 
 \begin{document}
 \frame{\titlepage}
-\frame{\frametitle{Module 3A: To Higher-Orders - Solution Approximation}\tableofcontents}
+\frame{\frametitle{Module 3B: To Higher-Orders - Discrete System}\tableofcontents}
 
 %NEW SECTION
-\section{} 
+\section{Numerical Quadrature (Gauss)} 
 \frame{\frametitle{\textbf{\secname}}
 \begin{itemize}
-\item a
-\textbf{Module 3: To Higher-Orders (nodal) }\\
-\textbf{3A: Sol’n Approximation}\\
-Revisit weak form\\
--Approx. space\\
--L2 Projection minimizes residual norm\\
--Test space $\rightarrow$ orthogonal\\
-Monomial basis?\\
-Ill-conditioning of monomials\\
-Recall: Lagrange interpolation (code)\\
-Derive Lagrange spatial approximation\\
-Equispaced interp points?\\
-Runge phenomenon\\
-Why: Bernstein/Markov inequality\\
-Roots of Leg instead\\
+\item We now have a method for generating a robust arbitrary order solution approximation, but unlike before it isn't practical to analytically pre-calculate all the integrals.
+\item We can use a numerical quadrature technique to do this instead, able to integrate arbitrary functions
+\item If we call the interpolation of a function $In f$ then we assume that for a sufficiently accurate interpolation, we can use the interpolation of the function wherever we could use the function itself before. This is in general M-1 order accurate.
+\be f \approx In f =\sum_{i=0}^M f(x_i)L_i(x) \ee
+\end{itemize}
+\be \int f \approx \int In f = \int \sum_{i=0}^M f(x_i)L_i(x) =  \sum_{i=0}^M f(x_i) \int L_i(x) =  \sum_{i=0}^M f(x_i)w_i\ee
+}
+
+%NEW SECTION
+\section{Hermite Interpolation (and quadrature)} 
+\frame{\frametitle{\textbf{\secname}}
+\begin{itemize}
+\item Recall: Hermite interpolation includes derivatives of interpolated function as well
+\item Consider a Hermite interpolation polynomial that includes first derivatives as well, the interpolation would be $2M-1$ accurate. The quadrature using this polynomial would look like:
+\be \int f \, dx \approx \sum_{i=0}^M f(x_i)w_i+\sum_{i=0}^M\left[ f'(x_i)\int (x-x_i)L_i^2(x) \, dx \right] \ee
+\item It turns out if we choose our quadrature/interpolation points to be the Legendre roots, the integral for the second term is zero. Thus no first derivative terms are needed for the Hermite quadrature, even though it is $2M-1$ order accurate.
 \end{itemize}
 }
 
 %NEW SECTION
-\section{} 
-\frame{\frametitle{\textbf{\secname}}
+\section{Truncation error/exact quadrature} 
+\frame[shrink]{\frametitle{\textbf{\secname}}
 \begin{itemize}
-\item a
+\item It is important to consider error sources from the approximation to the solution and integrals, these can affect convergence
+\item Three main error sources in quadrature: aliasing, truncation, and inexact quadrature
+\item Aliasing occurs if the function is not sampled frequently enough, it is assumed that the sol'n is sufficiently smooth and the discretization suitably fine to avoid this in most cases
+\item Truncation is unavoidable except where the exact function is of equal or lesser order than the interpolation/quadrature. Higher order terms present in the exact function are left off.
+\item Inexact quadrature occurs when the total polynomial order of the product of the interpolated functions undergoing quadrature exceeds the exactness of the quadrature. For Gauss-Legendre quadrature this isn't a problem for one and even two functions in the integrand. Each function is of order M-1 and the quadrature is exact for 2M-1, so the quadrature is able to exactly integrate the interpolation
 \end{itemize}
 }
 
 %NEW SECTION
-\section{} 
+\section{GL Lagrange Orthogonality} 
 \frame{\frametitle{\textbf{\secname}}
 \begin{itemize}
-\item a
-\end{itemize}
-}
-
-%NEW SECTION
-\section{} 
-\frame{\frametitle{\textbf{\secname}}
-\begin{itemize}
-\item a
+\item A final useful property of the Lagrange basis with Legendre interpolation points is orthogonality
+\item The product of two $M-1$ order Lagrange bases can be rearranged to be a Legendre poly of order $M$ and a remainder polynomial of order $M-2$
+\item The remainder polynomial can be expressed as a linear combination of Legendre polys all of order $<M$, all are orthogonal to the order $M$ Legendre, so
+\be \int_{-1}^1 L_i(x)L_j(x) \,dx = \delta_{ij}w_i \ee
 \end{itemize}
 }
 
 
 %NEW SECTION
-\section{} 
-\frame{\frametitle{\textbf{\secname}}
-\begin{itemize}
-\item a
-\end{itemize}
-}
-
-%NEW SECTION
-\section{} 
+\section{Local Mapping Function (Jacobian)} 
 \frame{\frametitle{\textbf{\secname}}
 \begin{itemize}
 \item a
@@ -95,7 +87,7 @@ Roots of Leg instead\\
 }
 
 %NEW SECTION
-\section{} 
+\section{Mass Matrix- Diagonalization} 
 \frame{\frametitle{\textbf{\secname}}
 \begin{itemize}
 \item a
@@ -103,7 +95,7 @@ Roots of Leg instead\\
 }
 
 %NEW SECTION
-\section{} 
+\section{Log differentiation} 
 \frame{\frametitle{\textbf{\secname}}
 \begin{itemize}
 \item a
@@ -111,7 +103,7 @@ Roots of Leg instead\\
 }
 
 %NEW SECTION
-\section{} 
+\section{Flux interpolation} 
 \frame{\frametitle{\textbf{\secname}}
 \begin{itemize}
 \item a
@@ -119,7 +111,7 @@ Roots of Leg instead\\
 }
 
 %NEW SECTION
-\section{} 
+\section{Stiffness Integral} 
 \frame{\frametitle{\textbf{\secname}}
 \begin{itemize}
 \item a
@@ -127,10 +119,34 @@ Roots of Leg instead\\
 }
 
 %NEW SECTION
-\section{} 
+\section{Numerical Flux (Extrapolated)} 
+\frame{\frametitle{\textbf{\secname}}
+\begin{itemize}
+\item Lobatto alternative
+\end{itemize}
+}
+
+%NEW SECTION
+\section{Assembly of System} 
 \frame{\frametitle{\textbf{\secname}}
 \begin{itemize}
 \item a
+\end{itemize}
+}
+
+%NEW SECTION
+\section{RK4 Time iscretization} 
+\frame{\frametitle{\textbf{\secname}}
+\begin{itemize}
+\item a
+\end{itemize}
+}
+
+%NEW SECTION
+\section{Investigate p-Convergence} 
+\frame{\frametitle{\textbf{\secname}}
+\begin{itemize}
+\item smoothness reqs, maybe inequality?
 \end{itemize}
 }
 
