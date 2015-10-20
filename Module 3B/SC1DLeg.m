@@ -1,4 +1,7 @@
-%Josh Bevan 2014
+%Copyright (c) 2014, Josh Bevan
+%All rights reserved.
+%This code is licensed under the BSD 3-Clause License, see License.txt for the full license.
+
 %1D Scalar Conservation Eqn solution using Discontinuous Galerkin
 %Arbitrary order spatial discretization using a Legendre polynomial basis
 %and RK4 explicit time discretization

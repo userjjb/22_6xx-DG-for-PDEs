@@ -1,5 +1,9 @@
-%--Josh Bevan 2014
+%Copyright (c) 2014, Josh Bevan
+%All rights reserved.
+%This code is licensed under the BSD 3-Clause License, see License.txt for the full license.
+
 %--1D Scalar Conservation Eqn solution using Discontinuous Galerkin
+%Linear spatial disretization, forward Euler time discretization
 clear all
 close all
 tau=2*pi();
